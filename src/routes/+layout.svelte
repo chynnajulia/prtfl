@@ -28,10 +28,6 @@
 		background-color: blue;
 	}
 
-	.page {
-		margin: 100px;
-	}
-
 	main {
 		/*padding: 2rem;*/
 		max-width: 1100px;

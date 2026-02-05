@@ -1,18 +1,5 @@
 <script>
-  const projects = [
-    {
-      title: "App 1",
-      description: "App 1",
-    },
-    {
-      title: "App 2",
-      description: "App 2",
-    },
-    {
-      title: "App 3",
-      description: "App 3",
-    }
-  ];
+  export let data;
 </script>
 
 <div class="page">
@@ -22,12 +9,16 @@
     </p>
 
     <section class="projects">
-    {#each projects as project}
-        <div class="card">
-        <h2>{project.title}</h2>
-        <p>{project.description}</p>
-        </div>
-    {/each}
+        {#each data.caseStudies as cs}
+            <a
+            class="card"
+            href={`/case-studies/${cs.slug}`}
+            data-sveltekit-preload
+            >
+            <h2>{cs.title}</h2>
+            <p>{cs.description}</p>
+            </a>
+        {/each}
     </section>
 </div>
 
