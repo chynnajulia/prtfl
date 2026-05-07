@@ -1,6 +1,7 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
 	import { fade, fly } from "svelte/transition";
+	import ThreeBG from "$lib/ThreeBG.svelte";
 	import { page } from "$app/stores";
 	import "../app.css";
 
@@ -10,6 +11,8 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 </svelte:head>
+
+<ThreeBG />
 
 <nav class="nav">
   <a href="/">Home</a>
@@ -52,7 +55,8 @@
 		/*padding: 2rem;*/
 		max-width: 1100px;
 		margin: auto;
-		background-color: red;
+		/*background-color: red;*/
+		/*backdrop-filter: blur(6px);*/
 	}
 
 	a {
