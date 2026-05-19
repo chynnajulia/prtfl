@@ -1,76 +1,101 @@
-<script>
+<script lang="ts">
   import { onMount } from "svelte";
   import { activeStation } from "$lib/stores";
+  import { TextScramble } from "$lib/TextScramble";
+  import ShowcaseCarousel from "$lib/ShowcaseCarousel.svelte";
 
-  import imageN1 from '$lib/assets/normal-1.png';
-  import imageD1 from '$lib/assets/dither-1.gif';
+  //import imageN1 from '$lib/assets/normal-1.png';
+  //import imageD1 from '$lib/assets/dither-1.gif';
 
   export let data;
 
   let sections = [];
 
-  // Communicate Active Station to ThreeJS
+  // For Text Scramble
+  let roleEl: HTMLElement;
+  
+  const introScramblePhrases = [
+    "UX Designer",
+    "Product Designer",
+    "Software Developer",
+    "Copywriter",
+  ];
+
+
   onMount(() => {
+    // Communicate Active Station to ThreeJS
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const index = sections.indexOf(entry.target);
-            activeStation.set(index);
+            activeStation.set(sections.indexOf(entry.target));
           }
         });
       },
-      {
-        threshold: 0.6 // station is "active" when 60% visible
-      }
+      { threshold: 0.6 }
     );
+    sections.forEach((s) => observer.observe(s));
 
-    sections.forEach((section) => observer.observe(section));
 
-    return () => observer.disconnect(); // cleanup
+    // ── TextScramble ──
+    const fxRole = new TextScramble(roleEl);
+    let counterRole = 0;
+
+    const nextRole = () => {
+      fxRole.setText(introScramblePhrases[counterRole]).then(() => {
+        counterRole = (counterRole + 1) % introScramblePhrases.length;
+
+        //const isName = introScramblePhrases[counter - 1] === "UX Designer";
+        //setTimeout(next, isName ? 2000 : 900);
+
+        setTimeout(nextRole, 1500);
+      });
+    };
+
+    nextRole();
+
+
+    return () => {
+      observer.disconnect();
+      fxRole.destroy();
+    };
+
   });
 </script>
 
 <div class="train-page">
 
   <!-- Station 1: Introduction -->
-  <section class="station" id="station-intro" bind:this={sections[0]}>
-    <div class="station-content">
-      <p class="station-label">01 · Departure</p>
-      <h1>Chynna Julia</h1>
-      <p class="role">UX Designer & Creative Developer</p>
-      <p class="flavor">
-        <!-- your flavor text here -->
-        Crafting thoughtful digital experiences — somewhere between 
-        ink and interface.
-      </p>
-    </div>
-  </section>
+  <!-- Station 1: Introduction -->
+<section class="station" id="station-intro" bind:this={sections[0]}>
+  <div class="station-content">
+    <p class="station-label">01 · Departure</p>
+
+    <h1 class="glitch-text">Chynna Julia</h1>
+
+    <p bind:this={roleEl}>UX Designer</p>
+    <p class="flavor">
+      Crafting thoughtful digital experiences —
+      somewhere between ink and interface.
+    </p>
+  </div>
+</section>
 
   <!-- Station 2: Showcase -->
   <section class="station" id="station-showcase" bind:this={sections[1]}>
     <div class="station-content">
       <p class="station-label">02 · Interchange</p>
       <h2>Selected Work</h2>
-      <p class="station-sub">Scroll horizontally to explore.</p>
+      <!--
       <div class="images">
-        <img class="bottom" src="{imageN1}"/> <!-- TODO -->
-        <img class="top" src="{imageD1}"/> <!-- TODO -->
-      </div>
+        <img class="bottom" src="{imageN1}"/>
+        <img class="top" src="{imageD1}"/> 
+      </div> -->
 
-      <!-- Horizontal scroll track -->
-      <div class="showcase-track">
-        {#each data.caseStudies as cs}
-          <div class="showcase-card">
-            <p class="card-tag">Case Study</p>
-            <h3>{cs.title}</h3>
-            <p>{cs.description}</p>
-            <a href={`/case-studies/${cs.slug}`} class="read-more">
-              Read the full story →
-            </a>
-          </div>
-        {/each}
-      </div>
+      <!-- ShowcaseCarousel receives the full caseStudies array.
+           It handles all navigation, animation, and card rendering internally. -->
+      <ShowcaseCarousel caseStudies={data.caseStudies} />
+
     </div>
   </section>
 
@@ -80,7 +105,7 @@
       <p class="station-label">03 · Final Stop</p>
       <h2>Let's build something together.</h2>
       <p class="flavor">
-        <!-- your CTA flavor text here -->
+        Additional flavor text.
       </p>
       <a href="mailto:you@email.com" class="cta-button">Get in touch</a>
     </div>
@@ -103,23 +128,22 @@
 
   /* Each station fills the screen and snaps into place */
   .station {
-    height: 100dvh; /* mobile + web-friendly */
+    height: 100dvh;
     scroll-snap-align: start;
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* left-aligned, editorial feel */
+    justify-content: flex-start;
     padding: 0 4rem;
   }
 
   .station-content {
     max-width: 640px;
     padding-left: 3rem;
+    width: 100%;
   }
 
   @media (min-width: 768px) {
-    .station-content {
-      padding-left: 9rem;
-    }
+    .station-content { padding-left: 9rem; }
   }
 
   .station-label {
@@ -131,52 +155,41 @@
     margin-bottom: 1rem;
   }
 
-  /* Horizontal scroll track for showcase cards */
-  .showcase-track {
-    display: flex;
-    gap: 1.5rem;
-    overflow-x: scroll;
-    scroll-snap-type: x mandatory;
-    padding-bottom: 1rem;
-    scrollbar-width: none;
+
+  h1 { font-size: 3rem; margin-bottom: 0.5rem; }
+  h2 { font-size: 2rem; margin-bottom: 1.5rem; }
+
+  .role {
+    color: #666;
+    margin-bottom: 1rem;
   }
 
-  .showcase-track::-webkit-scrollbar {
-    display: none;
-  }
-
-  .showcase-card {
-    min-width: 320px;
-    scroll-snap-align: start;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 2rem;
-    flex-shrink: 0;
-  }
-
-  .card-tag {
+  .flavor {
     font-family: monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    opacity: 0.4;
-    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #888;
+    line-height: 1.7;
+    max-width: 480px;
   }
 
-  .read-more {
+  .cta-button {
     display: inline-block;
     margin-top: 1.5rem;
     font-family: monospace;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     text-decoration: none;
-    color: #7930ff;
+    color: white;
+    background: #7930ff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    transition: opacity 0.2s;
   }
-
-  .read-more:hover {
-    opacity: 0.7;
-  }
+  .cta-button:hover { opacity: 0.8; }
 
 
+  /* IMAGE TEST */
   
   .images {
     position: relative;

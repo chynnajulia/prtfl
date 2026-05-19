@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { TextScramble } from "$lib/TextScramble";
 
   // ─── Props ────────────────────────────────────────────────────────────────
   export let caseStudies: Array<{
@@ -21,9 +22,9 @@
     'BOARD →',
     'READ CASE STUDY →',
   ];
-  let phraseIndex = 0;
+  let phraseIndex = 0; // TODO: delete this then just place a p or span within anchor text in order to cycle through (see page.svelte)
   let phraseText  = phrases[0];
-  let ctaEl: HTMLElement;
+  let vcsEl: HTMLElement;
 
   // ─── Carousel state ───────────────────────────────────────────────────────
   let current   = 0;
@@ -117,19 +118,13 @@
   }
 
   // ─── CTA glitch cycling ───────────────────────────────────────────────────
-  // Adds .glitching class → CSS animation fires → text swaps mid-corruption.
-  // The text change happens at t=220ms (the peak of the glitch noise).
-  // Class is removed at t=460ms so the animation can re-trigger next time.
   function cyclePhrase() {
-    if (!ctaEl) return;
-    ctaEl.classList.add('glitching');
     setTimeout(() => {
       phraseIndex        = (phraseIndex + 1) % phrases.length;
       phraseText         = phrases[phraseIndex];
-      ctaEl.dataset.text = phraseText; // syncs ::before / ::after ghost layers
-    }, 220);
-    setTimeout(() => ctaEl?.classList.remove('glitching'), 460);
+    }, 800);
   }
+
 
   // ─── Tilt (shared: cursor on desktop, gyroscope on mobile) ───────────────
   // x, y: normalized −1 to 1 (−1 = far left/up, 1 = far right/down)
@@ -242,9 +237,27 @@
 
     const phraseInterval = setInterval(cyclePhrase, 3200);
 
+
+    // Text Scramble
+    const fxViewCS = new TextScramble(vcsEl);
+    let counterVCS = 0;
+
+    const nextVCS = () => {
+      fxViewCS.setText(phrases[counterVCS]).then(() => {
+        counterVCS = (counterVCS + 1) % phrases.length;
+        setTimeout(nextVCS, 1500);
+      });
+    };
+
+    nextVCS();
+
+
     // Return value of onMount = cleanup function.
     // Svelte calls this automatically when the component is destroyed.
-    return () => clearInterval(phraseInterval);
+    return () => {
+        fxViewCS.destroy();
+        clearInterval(phraseInterval);
+    };
   });
 </script>
 
@@ -302,22 +315,22 @@
       <!-- Main card -->
       <div class="slide-viewport">
         <div
-          class="card"
-          bind:this={mainCard}
-          on:touchstart={onTouchStart}
-          on:touchmove={onTouchMove}
-          on:touchend={onTouchEnd}
+            class="card"
+            bind:this={mainCard}
+            ontouchstart={onTouchStart}
+            ontouchmove={onTouchMove}
+            ontouchend={onTouchEnd}
         >
 
           <!-- Image -->
           <div
             class="card-image"
             bind:this={cardImageEl}
-            on:click={handleImageTap}
+            onclick={handleImageTap}
             role="button"
             tabindex="0"
             aria-label="Tap to toggle full image"
-          >
+           >   
             <div class="img-layer img-dithered" class:hidden={imageRevealed}>
               {#if card.imageDithered}
                 <img src={card.imageDithered} alt="" />
@@ -374,12 +387,12 @@
             </p>
           </div>
 
-          <!-- Footer -->
+          <!-- Footer -->  
           <div class="card-footer">
             <a
               href="/case-studies/{card.slug}"
               class="cta-wrap"
-              bind:this={ctaEl}
+              bind:this={vcsEl}
               data-text={phraseText}
             >{phraseText}</a>
             <span class="boarding-label" aria-hidden="true">BOARDING PASS</span>
@@ -683,51 +696,13 @@
   /* ── Footer ── */
   .card-footer { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 1.15rem 0.85rem; border-top: 1px dashed rgba(0,0,0,0.09); }
 
-  /* ── Glitch CTA ── */
-  /* ::before and ::after are chromatic ghost copies of the text.
-     They shift in opposite directions during .glitching, creating
-     a two-channel (red + cyan) split like a mis-aligned print head. */
+
+
   .cta-wrap {
     position: relative; display: inline-block;
     font-family: monospace; font-size: 10px;
     letter-spacing: 0.14em; color: #7930ff;
     text-decoration: none; user-select: none;
-  }
-  .cta-wrap::before, .cta-wrap::after {
-    content: attr(data-text);
-    position: absolute; inset: 0; opacity: 0;
-  }
-  .cta-wrap::before { color: #ff2266; }
-  .cta-wrap::after  { color: #00eeff; }
-
-  .cta-wrap.glitching                   { animation: cta-body 0.45s steps(1); }
-  .cta-wrap.glitching::before { opacity: 0.75; animation: cta-red  0.45s steps(1); }
-  .cta-wrap.glitching::after  { opacity: 0.75; animation: cta-cyan 0.45s steps(1); }
-
-  @keyframes cta-body {
-    0%   { transform: none; clip-path: none; }
-    15%  { transform: translateX(3px);  clip-path: inset(20% 0 60% 0); }
-    30%  { transform: translateX(-3px); clip-path: inset(65% 0 10% 0); }
-    45%  { transform: translateX(2px);  clip-path: inset(40% 0 35% 0); }
-    60%  { transform: translateX(-1px); clip-path: inset(10% 0 80% 0); }
-    80%  { transform: none; clip-path: none; }
-    100% { transform: none; clip-path: none; }
-  }
-  @keyframes cta-red {
-    0%   { transform: none; }
-    15%  { transform: translateX(-5px) translateY(1px);  clip-path: inset(20% 0 60% 0); }
-    30%  { transform: translateX(5px)  translateY(-1px); clip-path: inset(65% 0 10% 0); }
-    60%  { transform: translateX(-2px); }
-    80%  { transform: none; opacity: 0; }
-    100% { opacity: 0; }
-  }
-  @keyframes cta-cyan {
-    0%   { transform: none; }
-    15%  { transform: translateX(5px)  translateY(-1px); clip-path: inset(60% 0 20% 0); }
-    30%  { transform: translateX(-5px) translateY(1px);  clip-path: inset(10% 0 65% 0); }
-    60%  { transform: translateX(2px); }
-    80%  { transform: none; opacity: 0; }
-    100% { opacity: 0; }
   }
 
   .boarding-label { font-family: monospace; font-size: 8px; color: rgba(0,0,0,0.14); letter-spacing: 0.12em; }
