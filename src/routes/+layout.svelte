@@ -16,11 +16,18 @@
 
 <svelte:head>
   <link rel="icon" href={favicon} />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bytesized&family=League+Spartan:wght@100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Ubuntu+Sans+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
 </svelte:head>
 
-<ThreeBG />
+<!-- Only render ThreeBG on the homepage -->
+{#if $page.url.pathname === '/'}
+  <ThreeBG />
+  <TrainNav />
+{/if}
 <TopNav />
-<TrainNav />
+
 
 <main class="page-wrapper" style="padding-top: {NAV_HEIGHT}px">
   {#key $page.url.pathname}

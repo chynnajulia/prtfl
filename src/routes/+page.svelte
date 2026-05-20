@@ -71,9 +71,9 @@
   <div class="station-content">
     <p class="station-label">01 · Departure</p>
 
-    <h1 class="glitch-text">Chynna Julia</h1>
+    <h1 class="name glitch-text">Chynna Julia</h1>
 
-    <p bind:this={roleEl}>UX Designer</p>
+    <p class="subheader">I am a <span bind:this={roleEl}>UX Designer</span>.</p>
     <p class="flavor">
       Crafting thoughtful digital experiences —
       somewhere between ink and interface.
@@ -147,7 +147,11 @@
   }
 
   .station-label {
-    font-family: monospace;
+    /*font-family: monospace;*/
+    font-family: "Ubuntu Sans Mono", monospace;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
     font-size: 0.75rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
@@ -159,15 +163,20 @@
   h1 { font-size: 3rem; margin-bottom: 0.5rem; }
   h2 { font-size: 2rem; margin-bottom: 1.5rem; }
 
-  .role {
-    color: #666;
-    margin-bottom: 1rem;
+  .name {
+    font-size: 5rem; 
+    margin-bottom: 0.5rem;
+  }
+
+  .subheader {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
   }
 
   .flavor {
-    font-family: monospace;
-    font-size: 0.9rem;
-    color: #888;
+    font-size: 1rem;
+    color:rgb(110, 110, 156);
+    opacity: 0.6;
     line-height: 1.7;
     max-width: 480px;
   }
