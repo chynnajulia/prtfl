@@ -1,96 +1,443 @@
-body {
-    margin: 0;
-    color: #111;
-}
+/* ============================================================
+   IMPORTS
+   Add these to your <svelte:head> in +layout.svelte if not
+   already there, or as @import at the top of this file:
 
+   Google Fonts:
+   League Spartan, Ubuntu Sans Mono, Lora
+   Bytesized: self-hosted (place in /static/fonts/)
+============================================================ */
 
-* {
-    box-sizing: border-box;
-
-    /* Font */
-    font-family: "League Spartan", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
-}
-
-.font-bytesized {
-  font-family: "Bytesized", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-}
-
-.font-ubuntu {
-  font-family: "Ubuntu Sans Mono", monospace;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal;
-}
-
-.font-lora {
-  font-family: "Lora", serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal;
-}
-
-.page {
-    padding: 3rem;
-    padding-bottom: 5rem;
-}
-
-
-/* For Chromatic Aberration on Text Across the App */
+/* ============================================================
+   DESIGN TOKENS
+   Single source of truth for the whole site.
+   Change a value here → updates everywhere.
+============================================================ */
 :root {
-    --glitch-red: #ff4757;
-    --glitch-cyan: #00d9ff;
+  /* ── Colors ── */
+  --color-bg:           #FAF8F5;        /* warm paper white */
+  --color-ink:          #1a1a1a;        /* deep ink */
+  --color-ink-soft:     rgba(0,0,0,0.55);
+  --color-ink-faint:    rgba(0,0,0,0.28);
+  --color-ink-ghost:    rgba(0,0,0,0.12);
+  --color-accent:       #7930ff;        /* purple — the stamp, the seal */
+  --color-accent-soft:  rgba(121,48,255,0.07);
+  --color-accent-mid:   rgba(121,48,255,0.15);
+  --color-border:       rgba(0,0,0,0.09);
+  --color-border-dashed:rgba(0,0,0,0.12);
+
+  /* ── Fonts ── */
+  --font-display: "League Spartan",   sans-serif;
+  --font-serif:   "Lora",             serif;
+  --font-mono:    "Ubuntu Sans Mono", monospace;
+  --font-pixel:   "Bytesized",        sans-serif; /* glitch / accent moments */
+
+  /* ── Type scale ── */
+  /* clamp(min, preferred, max) = fluid scaling between breakpoints */
+  --text-xs:      0.7rem;
+  --text-sm:      0.82rem;
+  --text-base:    1rem;
+  --text-lg:      1.15rem;
+  --text-xl:      1.4rem;
+  --text-2xl:     1.75rem;
+  --text-3xl:     2.25rem;
+  --text-display: clamp(2.8rem, 6vw, 5.5rem);  /* hero headings */
+  --text-massive: clamp(3.5rem, 9vw, 8rem);    /* station h1 */
+
+  /* ── Letter spacing ── */
+  --tracking-tight:   -0.02em;
+  --tracking-normal:   0;
+  --tracking-wide:     0.06em;
+  --tracking-wider:    0.12em;
+  --tracking-label:    0.18em; /* waybill labels, station numbers */
+  --tracking-widest:   0.25em;
+
+  /* ── Line height ── */
+  --leading-tight:  1.1;
+  --leading-snug:   1.35;
+  --leading-normal: 1.6;
+  --leading-relaxed:1.75;
+  --leading-loose:  1.9;  /* body copy in case study */
+
+  /* ── Spacing scale ── */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+
+  /* ── Border radius ── */
+  --radius-sm:   3px;
+  --radius-md:   8px;
+  --radius-lg:   16px;
+  --radius-pill: 999px;
+
+  /* ── Transitions ── */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
+  --transition-slow: 0.45s ease;
+  --transition-spring: 0.4s cubic-bezier(0.2, 1.3, 0.4, 1);
+
+  /* ── Z-index scale ── */
+  /* Defined here so layers never conflict */
+  --z-bg:      -30; /* ThreeBG matrix canvas  */
+  --z-mid:     -20; /* ThreeBG Three.js canvas */
+  --z-grain:   -10; /* grain overlay           */
+  --z-paper:    -8; /* paper overlay           */
+  --z-content:   1;
+  --z-nav:      50; /* TrainNav                */
+  --z-topnav:  100; /* TopNav                  */
+
+  /* ── Glitch palette ── */
+  --glitch-red:  #ff4757;
+  --glitch-cyan: #00d9ff;
 }
 
+/* ============================================================
+   RESET + BASE
+============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  /* Smooth font rendering — removes subpixel aliasing on macOS/retina */
+  -webkit-font-smoothing:  antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Prevent horizontal scroll flash on page transitions */
+  overflow-x: hidden;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-optical-sizing: auto;
+  line-height: var(--leading-normal);
+  min-height: 100dvh;
+
+  /* Subtle paper texture — present on all pages including those
+     without ThreeBG (About, case studies).
+     Same SVG noise as the ThreeBG grain layer for consistency. */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  background-repeat: repeat;
+}
+
+/* ── Images ── */
+img, video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── Links ── */
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+a:hover { opacity: 0.7; }
+
+/* ── Buttons ── */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+/* ── Lists ── */
+ul, ol { list-style: none; }
+
+/* ============================================================
+   TYPOGRAPHY
+   Base styles for when elements appear inside markdown
+   or outside of component-scoped styles.
+============================================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+}
+
+h1 { font-size: var(--text-massive); }
+h2 { font-size: var(--text-3xl);    }
+h3 { font-size: var(--text-2xl);    }
+h4 { font-size: var(--text-xl);     }
+h5 { font-size: var(--text-lg);     }
+h6 { font-size: var(--text-base);   }
+
+p {
+  line-height: var(--leading-relaxed);
+  color: var(--color-ink-soft);
+}
+
+strong { font-weight: 600; color: var(--color-ink); }
+em     { font-style: italic; }
+
+/* Inline code — purple tint, monospace */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+/* Horizontal rules — dashed, editorial */
+hr {
+  border: none;
+  border-top: 1px dashed var(--color-border-dashed);
+  margin: var(--space-8) 0;
+}
+
+/* ============================================================
+   FONT UTILITY CLASSES
+   Use these to apply specific fonts where needed.
+   e.g. <span class="font-mono"> or <p class="font-serif">
+============================================================ */
+.font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+  font-optical-sizing: auto;
+}
+
+.font-pixel {
+  font-family: var(--font-pixel);
+}
+
+/* Keep your original class names as aliases — backwards compatible */
+.font-ubuntu  { font-family: var(--font-mono);    font-optical-sizing: auto; }
+.font-lora    { font-family: var(--font-serif);   font-optical-sizing: auto; }
+.font-bytesized { font-family: var(--font-pixel); }
+
+/* ============================================================
+   GLOBAL UTILITY CLASSES
+   Reusable patterns that appear across many components.
+============================================================ */
+
+/* ── Waybill label ── */
+/* The tiny uppercase monospace field labels used everywhere:
+   "PROJECT", "ROLE", "YEAR", station numbers, etc. */
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  line-height: 1;
+}
+
+/* ── Stamp ── */
+/* Purple bordered badge: UX, DEV, etc. */
+.stamp {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  border: 1.5px solid var(--color-accent);
+  color: var(--color-accent);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  line-height: 1.6;
+}
+
+/* ── Mono small ── */
+/* General-purpose small monospace text: barcodes, refs, counters */
+.mono-sm {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-ink-faint);
+}
+
+/* ── Purple accent text ── */
+.accent { color: var(--color-accent); }
+
+/* ── Visually hidden (accessible) ── */
+/* Hides element visually but keeps it readable by screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================================
+   SELECTION
+   Purple tint when user selects text — on-brand.
+============================================================ */
+::selection {
+  background: var(--color-accent-mid);
+  color: var(--color-ink);
+}
+
+/* ============================================================
+   FOCUS
+   Visible focus ring for keyboard navigation.
+   Uses accent color to stay on-brand.
+============================================================ */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* Remove focus ring for mouse users */
+:focus:not(:focus-visible) { outline: none; }
+
+/* ============================================================
+   SCROLLBARS
+   Thin, on-brand scrollbars where they appear.
+============================================================ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ink-ghost) transparent;
+}
+::-webkit-scrollbar       { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-ghost);
+  border-radius: var(--radius-pill);
+}
+
+/* ============================================================
+   GLITCH TEXT
+   Chromatic aberration animation for headings and accent text.
+   Usage: <h1 class="glitch-text">
+   The idle period (0–92%) keeps it subtle — it only fires
+   occasionally, like a real transmission glitch.
+============================================================ */
 .glitch-text {
-    animation: text-glitch 6s ease-in-out infinite;
+  animation: text-glitch 6s ease-in-out infinite;
 }
 
 @keyframes text-glitch {
-    0%,
-    92%,
-    100% {
-        transform: translateX(0);
-        text-shadow: none;
-    }
-    93% {
-        transform: translateX(-2px);
-        text-shadow:
-            4px 0 var(--glitch-cyan),
-            -4px 0 var(--glitch-red);
-    }
-    94% {
-        transform: translateX(2px);
-        text-shadow:
-            -2px 0 var(--glitch-cyan),
-            2px 0 var(--glitch-red);
-    }
-    95% {
-        transform: translateX(-1px);
-        text-shadow:
-            1px 0 var(--glitch-cyan),
-            -1px 0 var(--glitch-red);
-    }
-    96% {
-        transform: translateX(1px);
-        text-shadow: none;
-    }
+  0%,
+  92%,
+  100% {
+    transform: translateX(0);
+    text-shadow: none;
+  }
+  93% {
+    transform: translateX(-2px);
+    text-shadow:
+       4px 0 var(--glitch-cyan),
+      -4px 0 var(--glitch-red);
+  }
+  94% {
+    transform: translateX(2px);
+    text-shadow:
+      -2px 0 var(--glitch-cyan),
+       2px 0 var(--glitch-red);
+  }
+  95% {
+    transform: translateX(-1px);
+    text-shadow:
+       1px 0 var(--glitch-cyan),
+      -1px 0 var(--glitch-red);
+  }
+  96% {
+    transform: translateX(1px);
+    text-shadow: none;
+  }
 }
 
-/* Text Scramble */
+/* ── Pixel/Bytesized glitch variant ── */
+/* For station labels, waybill fields, counter numbers —
+   uses the pixel font for extra matrix-y energy */
+.glitch-pixel {
+  font-family: var(--font-pixel);
+  animation: text-glitch 8s ease-in-out infinite;
+  animation-delay: 1.5s; /* offset from .glitch-text so they don't sync */
+}
+
+/* ============================================================
+   TEXT SCRAMBLE
+   The .dud span is injected by TextScramble.ts via innerHTML.
+   :global() not needed here since app.css is global by default.
+============================================================ */
 .dud {
-  color: #7930ff;
+  font-family: var(--font-pixel); /* Bytesized for scramble chars = very matrix */
+  color: var(--color-accent);
   opacity: 0.5;
 }
 
-@media (prefers-reduced-motion: reduce) { /* TODO */
+/* ============================================================
+   PAGE UTILITY
+   Kept for backwards compatibility with existing components.
+============================================================ */
+.page {
+  padding: var(--space-12);
+  padding-bottom: var(--space-20);
+}
 
-    .glitch-text {
-        animation: none;
-    }
+/* ============================================================
+   REDUCED MOTION
+   Respects user accessibility preference.
+   Disables all animations for users who prefer reduced motion.
+============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration:   0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration:  0.01ms !important;
+    scroll-behavior:      auto   !important;
+  }
+}
 
+/* ============================================================
+   PRINT
+   Basic print styles — hides navigation, shows content cleanly.
+   Useful if a recruiter prints a case study page.
+============================================================ */
+@media print {
+  .topnav,
+  .train-nav,
+  .arrow-btn,
+  .ghost { display: none !important; }
+
+  body {
+    background: white;
+    color: black;
+    font-size: 12pt;
+  }
+
+  a::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
 }
