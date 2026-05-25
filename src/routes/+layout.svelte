@@ -19,6 +19,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bytesized&family=League+Spartan:wght@100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Ubuntu+Sans+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width"/>
+
 </svelte:head>
 
 <!-- Only render ThreeBG on the homepage -->
@@ -43,8 +45,10 @@
 
 <style>
   main {
-    max-width: 1100px;
+    /*max-width: 1100px;*/
+    width: 100vw;
     margin: auto;
+    /*background-color: green;*/
   }
 
   .page-wrapper {

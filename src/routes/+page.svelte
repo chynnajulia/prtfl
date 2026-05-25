@@ -66,11 +66,11 @@
 <div class="train-page">
 
   <!-- Station 1: Introduction -->
-  <!-- Station 1: Introduction -->
 <section class="station" id="station-intro" bind:this={sections[0]}>
   <div class="station-content">
     <p class="station-label">01 · Departure</p>
 
+    <p>Hello, I am</p>
     <h1 class="name glitch-text">Chynna Julia</h1>
 
     <p class="subheader">I am a <span bind:this={roleEl}>UX Designer</span>.</p>
@@ -128,18 +128,19 @@
 
   /* Each station fills the screen and snaps into place */
   .station {
+    width: 100%;
     height: 100dvh;
     scroll-snap-align: start;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     padding: 0 4rem;
   }
 
   .station-content {
-    max-width: 640px;
-    padding-left: 3rem;
-    width: 100%;
+    /*max-width: 720px; /* originally 690px */
+    padding-left: 5%;
+    /*background-color: red;*/
   }
 
   @media (min-width: 768px) {
@@ -165,12 +166,14 @@
 
   .name {
     font-size: 5rem; 
-    margin-bottom: 0.5rem;
+    margin-bottom: -1rem;
   }
 
   .subheader {
     font-size: 1.25rem;
     margin-bottom: 0.75rem;
+    margin-left: 16rem;
+    letter-spacing: 0.05rem;
   }
 
   .flavor {

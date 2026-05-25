@@ -36,7 +36,7 @@
     if (nameEl) {
       const fx = new TextScramble(nameEl);
       // Small delay so the card entrance animation finishes first
-      setTimeout(() => fx.setText("Chynna Julia"), 600);
+      setTimeout(() => fx.setText("Chynna Julia Cordevilla"), 600);
       cleanup = () => fx.destroy();
     }
 
@@ -140,7 +140,7 @@
             <div class="identity-top">
               <p class="card-label">CARDHOLDER NAME</p>
               <!-- TextScramble targets this element -->
-              <p class="card-name glitch-text" bind:this={nameEl}>Chynna Julia</p>
+              <p class="card-name glitch-text" bind:this={nameEl}>Chynna Julia Cordevilla</p>
               <p class="card-tagline">
                 Designing at the intersection of ink, code, and transit.
               </p>
