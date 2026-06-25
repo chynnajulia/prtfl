@@ -1,12 +1,12 @@
 ---
-title: "App 1"
-slug: "app-1"
-description: "App 1 brief description."
-image: "/images/app-1.png"
-imageDithered: "/images/app-1-dithered.gif"
-role: "UX Designer"
+title: Test Application 1
+slug: app-1
+description: App 1 Test Test App 1 Test Done on Decap CMS Editor!!! :)
+type: UX
+role: UX Designer
 year: "2024"
-type: "UX"
+image: /images/app-1.png
+imageDithered: /images/app-1-dithered.gif
 ---
 
 ## Overview
