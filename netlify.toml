@@ -1,6 +1,6 @@
 [build]
   command   = "npm run build"
-  publish   = ".svelte-kit/output/client"
+#  publish   = ".svelte-kit/output/client"
 
 [build.environment]
   NODE_VERSION = "20"
@@ -10,7 +10,7 @@
 #  directory = ".svelte-kit/output/server"
 
 # Redirects: send all requests through SvelteKit
-[[redirects]]
-  from   = "/*"
-  to     = "/.netlify/functions/sveltekit"
-  status = 200
+#[[redirects]]
+#  from   = "/*"
+#  to     = "/.netlify/functions/sveltekit"
+#  status = 200
