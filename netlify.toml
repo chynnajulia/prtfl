@@ -1,0 +1,16 @@
+[build]
+  command   = "npm run build"
+  publish   = ".svelte-kit/output/client"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SvelteKit SSR functions live here after build
+[[functions]]
+  directory = ".svelte-kit/output/server"
+
+# Redirects: send all requests through SvelteKit
+[[redirects]]
+  from   = "/*"
+  to     = "/.netlify/functions/sveltekit"
+  status = 200

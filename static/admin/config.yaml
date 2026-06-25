@@ -1,19 +1,121 @@
+# ── Backend ──────────────────────────────────────────────────
+# git-gateway is Decap's native Netlify auth method.
+# It connects to your GitHub repo through Netlify Identity
+# so you never expose a GitHub token.
 backend:
   name: git-gateway
-  branch: main
+  branch: main  # change to master if that's your default branch
 
-media_folder: "static/images"
-public_folder: "/images"
+# ── Media ────────────────────────────────────────────────────
+# media_folder: where uploaded files land on disk
+# public_folder: how they're referenced in markdown/frontmatter
+# e.g. uploading app-1.png → stored at static/images/app-1.png
+#                           → referenced as /images/app-1.png
+media_folder: static/images
+public_folder: /images
 
+# ── Collections ──────────────────────────────────────────────
 collections:
-  - name: "caseStudies"
-    label: "Case Studies"
-    folder: "content/case-studies"
+
+  - name: case-studies
+    label: Case Studies
+    label_singular: Case Study
+    folder: content/case-studies
     create: true
+    delete: true
+    # slug template: filename is generated from the title field
     slug: "{{slug}}"
+    # Preview path: clicking "View Preview" in the CMS opens this URL
+    preview_path: /case-studies/{{slug}}
+
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Slug", name: "slug", widget: "string" }
-      - { label: "Description", name: "description", widget: "text" }
-      - { label: "Hero Image", name: "hero", widget: "image" }
-      - { label: "Body", name: "body", widget: "markdown" }
+
+      # ── Identity ──
+      - label: Title
+        name: title
+        widget: string
+        hint: "The project name. e.g. Transit Pay — Fare management redesign"
+
+      - label: Slug
+        name: slug
+        widget: string
+        hint: "URL-safe identifier. e.g. transit-pay — no spaces, lowercase"
+        pattern:
+          - '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          - "Lowercase letters, numbers, and hyphens only"
+
+      - label: Description
+        name: description
+        widget: text
+        hint: "One or two sentences. Shown on the carousel card and the docket summary."
+
+      # ── Classification ──
+      - label: Type
+        name: type
+        widget: select
+        options:
+          - { label: "UX Design",  value: "UX"      }
+          - { label: "Development", value: "DEV"     }
+          - { label: "UX + Dev",   value: "UX + DEV" }
+        default: UX
+        required: false
+
+      - label: Role
+        name: role
+        widget: string
+        hint: "Your specific role. e.g. Lead UX Designer"
+        required: false
+
+      - label: Year
+        name: year
+        widget: number
+        value_type: int
+        min: 2000
+        max: 2099
+        hint: "Year the project was completed or launched."
+        required: false
+
+      # ── Images ──
+      - label: Hero Image (HD)
+        name: image
+        widget: image
+        hint: "Full resolution project image. Shown on hover (desktop) and always on mobile."
+        required: false
+        media_library:
+          config:
+            multiple: false
+
+      - label: Hero Image (Dithered)
+        name: imageDithered
+        widget: image
+        hint: "Your manually dithered version. Shown by default on desktop until hover."
+        required: false
+        media_library:
+          config:
+            multiple: false
+
+      # ── Video ──
+      - label: Video Walkthrough URL
+        name: videoUrl
+        widget: string
+        required: false
+        hint: >
+          YouTube or Vimeo URL for an interaction walkthrough.
+          e.g. https://www.youtube.com/watch?v=xxxxx
+          Leave blank if not applicable.
+        pattern:
+          - '^(https?://)?(www\.)?(youtube\.com|youtu\.be|vimeo\.com)/.+$'
+          - "Must be a valid YouTube or Vimeo URL"
+
+      # ── Body ──
+      - label: Full Case Study
+        name: body
+        widget: markdown
+        hint: >
+          The full in-depth case study. Use headings (##, ###),
+          blockquotes (>) for pull quotes, and the image button
+          to insert inline images or GIFs.
+        # Show the WYSIWYG editor by default, raw markdown toggle available
+        editor_components:
+          - image
+          - code-block
