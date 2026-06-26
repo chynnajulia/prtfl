@@ -70,7 +70,9 @@
     align-items: center;
     justify-content: space-between;
     padding: 1rem 2rem;
-    background-color: red;
+    /*background-color: white;*/
+    /*background-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0.8), rgba(255,255,255,0.65), rgba(255,255,255,0));*/
+
 
     /*
     background: rgba(255, 255, 255, 0.75);
@@ -78,9 +80,10 @@
     -webkit-backdrop-filter: blur(8px);
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     */
+}
 
+    
 
-  }
 
   /* ── Logo ── */
   .logo {
@@ -101,6 +104,8 @@
 
   /* ── Desktop links ── */
   .desktop-links {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(4px);
     display: flex;
     margin-left: auto;
     gap: 1.5rem;
@@ -108,22 +113,25 @@
     align-items: center;
 
     border-radius: 40px;
+    border: 1.5px solid white;
 
-    box-shadow: 0px -3px 3px 0px rgba(255,255,255,0.5);
-    -webkit-box-shadow: 0px -3px 3px 0px rgba(255,255,255,0.5);
-    -moz-box-shadow: 0px -3px 3px 0px rgba(255,255,255,0.5);
+    /*
+    box-shadow: 0px -3px 3px 0px rgba(197, 204, 235, 0.5);
+    -webkit-box-shadow: 0px -3px 3px 0px rgba(197, 204, 235, 0.5);
+    -moz-box-shadow: 0px -3px 3px 0px rgba(197, 204, 235, 0.5);
 
     box-shadow: 0px 3px 3px 0px rgba(255,255,255,0.5);
     -webkit-box-shadow: 0px 3px 3px 0px rgba(255,255,255,0.5);
     -moz-box-shadow: 0px 3px 3px 0px rgba(255,255,255,0.5);
 
-    box-shadow: 0px 15px 40px 10px rgba(77, 61, 88, 0.15);
-    -webkit-box-shadow: 0px 15px 40px 10px rgba(77, 61, 88, 0.15);
-    -moz-box-shadow: 0px 15px 40px 10px rgba(77, 61, 88, 0.15);
+    box-shadow: 0px 15px 40px 10px rgba(90, 78, 110, 0.15);
+    -webkit-box-shadow: 0px 15px 40px 10px rgba(90, 78, 110, 0.15);
+    -moz-box-shadow: 0px 15px 40px 10px rgba(90, 78, 110, 0.15);
+    */
 
     box-shadow: 
-      inset 1px 1px 0px rgba(255, 255, 255, 0.4), /* Highlights */
-      0 8px 24px rgba(0, 0, 0, 0.25); /* Cast Shadow */
+      inset 1px 1px 0px rgba(255, 255, 255, 0.498), /* Highlights */
+      0px 3px 6px rgba(173, 162, 213, 0.35); /* Cast Shadow */
 
     /*
     background: rgba(255, 255, 255, 0.05);
@@ -143,16 +151,17 @@
   .desktop-links a {
     font-family: var(--font-mono);
     font-size: 0.85rem;
-    font-weight: 500;
+    font-weight: 300;
     letter-spacing: 0.08em;
     text-decoration: none;
     color: #1a1a1a;
-    opacity: 0.5;
-    transition: opacity 0.2s ease;
+    opacity: 0.85;
+    transition: opacity 0.5s ease, font-weight 0.5s ease;
   }
 
   .desktop-links a:hover,
   .desktop-links a.active {
+    font-weight: 500;
     opacity: 1;
   }
 
@@ -167,19 +176,21 @@
     /*text-transform: uppercase;*/
     text-decoration: none;
     color: white;
-    background: #7930ff;
     padding: 0.5rem 1rem;
     border-radius: 20px;
-    transition: opacity 0.2s ease;
     white-space: nowrap;
+
+    background-color: rgba(121, 48, 255, 0.7);
+    opacity: 0.85;
+    transition: opacity 0.5s ease;
+    
   }
 
   .cv-button:hover {
-    opacity: 0.8;
+    opacity: 1;
   }
 
   .cv-label {
-    font-family: monospace;
     font-size: 0.75rem;
     letter-spacing: 0.1em;
   }
