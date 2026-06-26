@@ -294,6 +294,14 @@
     padding: 6rem 2rem 4rem;
   }
 
+  /* Desktop */
+    @media (min-width: 768px) {
+      .docket-inner {
+        max-width: none;
+        padding: 6rem 12rem 4rem;
+      }
+    }
+
   /* Back link — ticket stub aesthetic */
   .back-link {
     display: inline-block;
@@ -436,6 +444,13 @@
     color: white;
   }
 
+
+
+
+
+
+
+
   /* ══════════════════════════
      FULL STORY SECTION
   ══════════════════════════ */
@@ -446,6 +461,14 @@
     margin: 0 auto;
     padding: 4rem 2rem 6rem;
   }
+
+  /* Desktop */
+    @media (min-width: 768px) {
+      .story-inner {
+        max-width: none;
+        padding: 6rem 12rem 4rem;
+      }
+    }
 
   /* ── Story nav (top + bottom) ── */
   .story-nav, .story-footer {

@@ -143,6 +143,7 @@
     /*background-color: red;*/
   }
 
+  /* Desktop - Left Padding */
   @media (min-width: 768px) {
     .station-content { padding-left: 9rem; }
   }
