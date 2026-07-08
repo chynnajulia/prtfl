@@ -34,7 +34,12 @@ collections:
       - label: Title
         name: title
         widget: string
-        hint: "The project name. e.g. Transit Pay — Fare management redesign"
+        hint: "The project name."
+
+      - label: Subtitle
+        name: subtitle
+        widget: string
+        hint: "A brief action-description of the purpose of the effort-- why the project was undertaken, and how was it impactful?"
 
       - label: Slug
         name: slug
@@ -47,7 +52,7 @@ collections:
       - label: Description
         name: description
         widget: text
-        hint: "One or two sentences. Shown on the carousel card and the docket summary."
+        hint: "A few lines describing the actual project (or intended outcome)."
 
       # ── Classification ──
       - label: Type
@@ -63,16 +68,25 @@ collections:
       - label: Role
         name: role
         widget: string
-        hint: "Your specific role. e.g. Lead UX Designer"
+        hint: "The specific role/s played during the development of the project."
         required: false
 
-      - label: Year
-        name: year
-        widget: number
-        value_type: int
-        min: 2000
-        max: 2099
-        hint: "Year the project was completed or launched."
+      - label: Team Involved
+        name: teamInvolved
+        widget: string
+        hint: "The team members involved in the project."
+        required: false
+
+      - label: Timeline Start
+        name: timelineStart
+        widget: string
+        hint: "Month and Year we began working on the project."
+        required: false
+
+      - label: Timeline End
+        name: timelineEnd
+        widget: string
+        hint: "Month and Year we stopped working on the project. 'Ongoing' if still in progress."
         required: false
 
       # ── Images ──
@@ -108,6 +122,48 @@ collections:
           - "Must be a valid YouTube or Vimeo URL"
 
       # ── Body ──
+      - label: Context
+        name: context
+        widget: string
+        hint: "The context surrounding the conception of the project."
+        required: false
+
+      - label: Problem
+        name: problem
+        widget: string
+        hint: "The problem or challenge that the project aimed to address."
+        required: false
+
+      - label: Solution
+        name: solution
+        widget: string
+        hint: "The solution implemented to address the problem."
+        required: false
+
+      - label: Results
+        name: results
+        widget: string
+        hint: "The results achieved through the implemented solution."
+        required: false
+
+      - label: Testing
+        name: testing
+        widget: string
+        hint: "The testing methodology and results."
+        required: false
+
+      - label: Insights
+        name: insights
+        widget: string
+        hint: "Key insights learned throughout the project."
+        required: false
+
+      - label: Future Work
+        name: futureWork
+        widget: string
+        hint: "Potential developments or next steps for the project."
+        required: false
+
       - label: Full Case Study
         name: body
         widget: markdown
