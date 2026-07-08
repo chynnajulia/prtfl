@@ -95,7 +95,7 @@
     justify-content: center;
     padding: 6rem var(--space-12) var(--space-12);
     gap: var(--space-8);
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
   }
 

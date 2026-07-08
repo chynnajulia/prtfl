@@ -12,6 +12,7 @@
   // Top navbar height in px — used to offset page content so
   // nothing hides behind the fixed navbar
   const NAV_HEIGHT = 64;
+
 </script>
 
 <svelte:head>
@@ -23,12 +24,12 @@
 
 </svelte:head>
 
-<!-- Only render ThreeBG on the homepage -->
-{#if $page.url.pathname === '/'}
+<!-- TODO pls make a list of all pages that should have the nav -->
+{#if $page.url.pathname === '/' || $page.url.pathname === '/about'}
   <ThreeBG />
   <TrainNav />
+  <TopNav />
 {/if}
-<TopNav />
 
 
 <main class="page-wrapper" style="padding-top: {NAV_HEIGHT}px">
