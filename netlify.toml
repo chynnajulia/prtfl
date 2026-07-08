@@ -5,6 +5,8 @@
 [build.environment]
   NODE_VERSION = "20"
 
+ 
+# COMMENTING THESE OUT BECAUSE THEY MESS WITH DEPLOYMENT
 # SvelteKit SSR functions live here after build
 # [[functions]]
 #  directory = ".svelte-kit/output/server"
